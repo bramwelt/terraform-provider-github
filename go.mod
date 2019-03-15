@@ -15,6 +15,7 @@ require (
 	github.com/mitchellh/mapstructure v0.0.0-20180220230111-00c29f56e238 // indirect
 	github.com/posener/complete v1.1.1 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190215210624-980c5ac6f3ac // indirect
+	github.com/stretchr/testify v1.3.0
 	github.com/terraform-providers/terraform-provider-tls v1.2.0
 	github.com/zclconf/go-cty v0.0.0-20180328152515-d006e4534bc4 // indirect
 	golang.org/x/crypto v0.0.0-20180330210355-12892e8c234f // indirect
