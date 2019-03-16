@@ -22,6 +22,7 @@ resource "github_branch_protection" "example" {
   repository     = "${github_repository.example.name}"
   branch         = "master"
   enforce_admins = true
+  signed_commits = true
 
   required_status_checks {
     strict   = false
@@ -29,6 +30,7 @@ resource "github_branch_protection" "example" {
   }
 
   required_pull_request_reviews {
+    number_of_approvals   = 3
     dismiss_stale_reviews = true
     dismissal_users       = ["foo-user"]
     dismissal_teams       = ["${github_team.example.slug}", "${github_team.second.slug}"]
@@ -57,6 +59,7 @@ The following arguments are supported:
 
 * `repository` - (Required) The GitHub repository name.
 * `branch` - (Required) The Git branch to protect.
+* `signed_commits` - (Optional) Boolean, setting this to `true` enforces verified commit signatures for the branch.
 * `enforce_admins` - (Optional) Boolean, setting this to `true` enforces status checks for repository administrators.
 * `required_status_checks` - (Optional) Enforce restrictions for required status checks. See [Required Status Checks](#required-status-checks) below for details.
 * `required_pull_request_reviews` - (Optional) Enforce restrictions for pull request reviews. See [Required Pull Request Reviews](#required-pull-request-reviews) below for details.
@@ -73,6 +76,7 @@ The following arguments are supported:
 
 `required_pull_request_reviews` supports the following arguments:
 
+* `number_of_approvals`: (Optional) The number of approving reviews before the pull request can be merged. Defaults to 1.
 * `dismiss_stale_reviews`: (Optional) Dismiss approved reviews automatically when a new commit is pushed. Defaults to `false`.
 * `dismissal_users`: (Optional) The list of user logins with dismissal access
 * `dismissal_teams`: (Optional) The list of team slugs with dismissal access.
