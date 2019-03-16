@@ -59,9 +59,9 @@ func resourceGithubIssueLabel() *schema.Resource {
 // This function will first check if the label exists, and then issue an update,
 // otherwise it will create. This is also advantageous in that we get to use the
 // same function for two schema funcs.
-
 func resourceGithubIssueLabelCreateOrUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Organization).client
+	labels := meta.(*Organization).labels
 	orgName := meta.(*Organization).name
 	repoName := d.Get("repository").(string)
 	name := d.Get("name").(string)
@@ -78,7 +78,7 @@ func resourceGithubIssueLabelCreateOrUpdate(d *schema.ResourceData, meta interfa
 
 	log.Printf("[DEBUG] Querying label existence: %s (%s/%s)",
 		name, orgName, repoName)
-	existing, err := batchGetLabel(ctx, client.Issues, orgName, repoName, name)
+	existing, err := labels.GetLabel(ctx, orgName, repoName, name)
 	if err != nil {
 		return err
 	}
@@ -130,17 +130,16 @@ func resourceGithubIssueLabelCreateOrUpdate(d *schema.ResourceData, meta interfa
 }
 
 func resourceGithubIssueLabelRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*Organization).client
+	labels := meta.(*Organization).labels
 	repoName, name, err := parseTwoPartID(d.Id())
 	if err != nil {
 		return err
 	}
 
 	orgName := meta.(*Organization).name
-	ctx := context.WithValue(context.Background(), ctxId, d.Id())
 
 	log.Printf("[DEBUG] Reading label: %s (%s/%s)", name, orgName, repoName)
-	githubLabel, err := batchGetLabel(ctx, client.Issues, orgName, repoName, name)
+	githubLabel, err := labels.GetLabel(context.Background(), orgName, repoName, name)
 	if err != nil {
 		if ghErr, ok := err.(*github.ErrorResponse); ok {
 			if ghErr.Response.StatusCode == http.StatusNotFound {

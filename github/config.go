@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/google/go-github/github"
 	"github.com/hashicorp/terraform/helper/logging"
@@ -21,6 +22,7 @@ type Config struct {
 type Organization struct {
 	name        string
 	client      *github.Client
+	labels      *labelBatcher
 	StopContext context.Context
 }
 
@@ -54,6 +56,12 @@ func (c *Config) Client() (interface{}, error) {
 			return nil, err
 		}
 		org.client.BaseURL = u
+	}
+
+	org.labels = &labelBatcher{
+		issues: org.client.Issues,
+		// this could probably be 1 second
+		after: 2 * time.Second,
 	}
 
 	return &org, nil
